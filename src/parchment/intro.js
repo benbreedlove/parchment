@@ -81,7 +81,7 @@ var urloptions = (function( options ) {
 	while ( i < options.length )
 	{
 		temp = /([^=]+)(=(.*))?/.exec( options[i++] );
-		result[temp[1]] = temp[3] ? unescape( temp[3] ) : true;
+		result[temp[1]] = temp[3] ? unescape( temp[3] ).replace(/\/$/, '') : true;
 	}
 	return result;
 } )( location.search.slice(1).split( /[&;]/g ) );
