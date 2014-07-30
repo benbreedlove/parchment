@@ -1394,6 +1394,7 @@ function evhan_doc_keypress(ev) {
   if (win.input.type == 'line') {
 
     if (keycode == 13) {
+      console.log('lol wat');
       /* Grab the Return/Enter key here. This is the same thing we'd do if
          the input field handler caught it. */
       submit_line_input(win, win.inputel, null);
