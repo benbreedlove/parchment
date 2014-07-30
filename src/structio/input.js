@@ -49,7 +49,7 @@ TextInput = Object.subClass({
 		input = $( '<input>', {
 			'class': 'TextInput',
 			autocapitalize: 'off',
-			keydown: function( event )
+			keydown: function( event, justGo )
 			{
 				var keyCode = self.keyCode = event.which,
 				cancel;
@@ -84,7 +84,7 @@ TextInput = Object.subClass({
 				}
 				
 				// Accept line input
-				if ( keyCode == 13 )
+				if ( keyCode == 13 || justGo)
 				{
 					self.submitLine();
 					cancel = 1;
