@@ -1,4 +1,4 @@
-var config = require('./config.json');
+var config = require('./log/config.json');
 var childProcess = require('child_process'),
 twitterAPI = require('node-twitter-api'),
 twitter = new twitterAPI({
