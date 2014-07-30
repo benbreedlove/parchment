@@ -59,12 +59,14 @@ var findCommand = function(callback) {
 
     var tweetRequest = response.statuses[0];
     if (tweetRequest.id === config.lastTweetUsed) {
+      console.log('no new commands');
       return;
     }
     config.lastTweetUsed = tweetRequest.id;
     config.lastUser = tweetRequest.user.screen_name;
 
     var command = tweetRequest.text.replace(/^.*@zorkmachine /i, '');
+    console.log('command is ', command);
     callback(command, tweetRequest);
   });
 }
@@ -76,6 +78,11 @@ var inputCommand = function(command, callback) {
      console.log(error.stack);
      console.log('Error code: '+error.code);
      console.log('Signal received: '+error.signal);
+     return;
+    }
+    if (stderr) {
+      console.log(stderr);
+      return;
     }
 
     config.hash = stdout.replace(/(\r\n|\n|\r)/, '');
@@ -166,7 +173,7 @@ client.getFile('/zork/config.json', function(err, res){
 
     res.on('end', function() {
         config = JSON.parse(body)
-        console.log("Got response: ", config);
+        console.log("Inital state is: ", config);
         main();
     });
 
