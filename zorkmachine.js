@@ -1,14 +1,20 @@
-var config = require('./log/config.json');
+var client = require('knox').createClient({
+      key: process.env.s3key
+    , secret: process.env.s3secret
+    , bucket: 'zork'
+});
+var config;
+
 var childProcess = require('child_process'),
 twitterAPI = require('node-twitter-api'),
 twitter = new twitterAPI({
-      consumerKey: config.consumerKey,
-      consumerSecret: config.consumerSecret
+      consumerKey: process.env.consumerKey,
+      consumerSecret: process.env.consumerSecret
       //callback: 'http://yoururl.tld/something'
 });
 
-var accessTokenSecret = config.accessTokenSecret;
-var accessToken = config.accessToken;
+var accessTokenSecret = process.env.accessTokenSecret;
+var accessToken = process.env.accessToken;
 
 var main = function() {
   findCommand(function(command, request) {
@@ -64,7 +70,7 @@ var findCommand = function(callback) {
 }
 
 var inputCommand = function(command, callback) {
-  var phantom = childProcess.exec('phantomjs ph_run.js "' + config.hash + '" "' + command + '"',
+  var phantom = childProcess.exec('phantomjs ph_run.js "' + config.hash + '" "' + command.replace(/"/g, '\\"') + '"',
   function (error, stdout, stderr) {
     if (error) {
      console.log(error.stack);
@@ -136,14 +142,32 @@ var restartTweet = function() {
 }
 
 var saveConfig = function() {
-  var fs = require("fs");
-  fs.writeFile("config.json", JSON.stringify(config), function(err) {
-      if(err) {
-          console.log(err);
-      } else {
-          console.log("The file was saved!");
-      }
+  config.count++;
+  var string = JSON.stringify(config);
+  var req = client.put('/zork/config.json', {
+      'x-amz-acl': 'public-read',
+      'Content-Length': string.length,
+      'Content-Type': 'application/json'
   });
+  req.on('response', function(res){
+    if (200 == res.statusCode) {
+      console.log('config saved to %s', req.url);
+    }
+  });
+  req.end(string);
 }
 
-main();
+client.getFile('/zork/config.json', function(err, res){
+    var body = '';
+
+    res.on('data', function(chunk) {
+        body += chunk;
+    });
+
+    res.on('end', function() {
+        config = JSON.parse(body)
+        console.log("Got response: ", config);
+        main();
+    });
+
+});
