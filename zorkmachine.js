@@ -21,6 +21,7 @@ var main = function() {
       restartTweet();
       return;
     }
+    config.restartRequested = false;
     if (command.match(/^\s*save\s*$/i)) {
       config.savedGame = config.hash;
       saveConfig();
