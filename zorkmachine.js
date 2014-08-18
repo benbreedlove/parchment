@@ -58,7 +58,7 @@ var findCommand = function(callback) {
   accessToken, accessTokenSecret, function(error, response) {
 
     var tweetRequest = response.statuses[0];
-    if (tweetRequest.id === config.lastTweetUsed) {
+    if (!tweetRequest || tweetRequest.id === config.lastTweetUsed) {
       console.log('no new commands');
       return;
     }
